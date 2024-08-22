@@ -5,8 +5,6 @@ const gamesBoardContainer = document.getElementById('gamesboard-container');
 const optionsContainer = document.querySelector('.options-container');
 const flipButton = document.getElementById('flip-button');
 
-
-
 // ================================
 // Functions
 // ================================
@@ -18,8 +16,8 @@ const flipButton = document.getElementById('flip-button');
 let angle = 0;
 function flip () {
     const optionsShips = Array.from(optionsContainer.children);
-
-    angle = angle === 0 ? 90 : 0;
+    angle = angle === 270 ? 0 : angle + 90;
+    //angle = angle === 0 ? 90 : 0;
     for (let optionShip of optionsShips) {
         optionShip.style.transform = `rotate(${angle}deg)`;
     }
