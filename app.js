@@ -1,9 +1,9 @@
 // ================================
 // DOM Queries
 // ================================
-const flipButton = document.getElementById('flip-button');
-const gamesboardContainer = document.getElementById('gamesboard-container');
+const gamesBoardContainer = document.getElementById('gamesboard-container');
 const optionsContainer = document.querySelector('.options-container');
+const flipButton = document.getElementById('flip-button');
 
 
 
@@ -13,11 +13,9 @@ const optionsContainer = document.querySelector('.options-container');
 /**
  * Toggles the rotation of all child elements within the optionsContainer
  * between 0 and 90 deg.
- * Used by: `flipButton`
+ * Called by: `flipButton`
  */
-// Used for flip()'s angle
 let angle = 0;
-
 function flip () {
     const optionsShips = Array.from(optionsContainer.children);
 
@@ -26,15 +24,26 @@ function flip () {
         optionShip.style.transform = `rotate(${angle}deg)`;
     }
 }
+
 /**
- * Creates game boards
+ * Creates a div with classname 'game-board'.
+ * Div is then attached to gamesBoardContainer
+ * Style defined in styles.css.
+ * Parameters: color - Color used for background color.
+ * Invoked immediately.
  */
 // Board Creation
 const width = 10
-function createBoard() {
+function createBoard(color) {
     const gameBoardContainer = document.createElement('div');
     gameBoardContainer.classList.add('game-board');
+    gameBoardContainer.style.backgroundColor = color;
+
+    gamesBoardContainer.append(gameBoardContainer);
 }
+
+createBoard('yellow');
+createBoard('pink');
 
 // ================================
 // Event Listeners
