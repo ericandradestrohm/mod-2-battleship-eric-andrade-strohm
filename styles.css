@@ -8,8 +8,14 @@
     width: 200px;
     height: 200px;
 
-}
+    display: flex;
+    flex-wrap: wrap;
 
+}
+.block {
+    width: 20px;
+    height: 20px;
+}
 .options-container {
     width: 500px;
     height: 60px;
