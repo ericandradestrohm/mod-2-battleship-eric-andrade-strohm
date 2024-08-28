@@ -54,8 +54,20 @@ function createBoard(color, user) {
     gamesBoardContainer.append(gameBoardContainer);
 }
 
-createBoard('yellow', 'player');
-createBoard('pink', 'computer');
+/**
+ * Generates random placements for ship pieces for Computer player
+ * 
+ * Parameter:
+ * ship - The ship Object
+ * 
+ * Invoked when creating ship placements.
+ */
+function addShipPiece(ship) {
+    const allBoardBlocks = document.querySelectorAll("#computer div");
+    let randomBoolean = Math.random() < 0.5;
+    let isHorizontal = randomBoolean;
+    let randomStartIndex = Math.floor(Math.random() * width * width);
+}
 
 // ================================
 // Constructors
@@ -66,7 +78,6 @@ class Ship {
         this.length = length;
     }
 }
-
 // ================================
 // Objects
 // ================================
@@ -78,6 +89,14 @@ const carrier = new Ship('carrier', 5);
 
 const ships = [destroyer, submarine, cruiser, battleship, carrier];
 
+// ================================
+// Function Calls
+// ================================
+// Create Board
+createBoard('yellow', 'player');
+createBoard('pink', 'computer');
+
+addShipPiece(destroyer);
 // ================================
 // Event Listeners
 // ================================
