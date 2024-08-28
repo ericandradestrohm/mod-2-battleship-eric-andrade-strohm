@@ -58,6 +58,27 @@ createBoard('yellow', 'player');
 createBoard('pink', 'computer');
 
 // ================================
+// Constructors
+// ================================
+class Ship {
+    constructor(name, length) {
+        this.name = name;
+        this.length = length;
+    }
+}
+
+// ================================
+// Objects
+// ================================
+const destroyer = new Ship('destroyer', 2);
+const submarine = new Ship('submarine', 3);
+const cruiser = new Ship('cruiser', 3);
+const battleship = new Ship('battleship', 4);
+const carrier = new Ship('carrier', 5);
+
+const ships = [destroyer, submarine, cruiser, battleship, carrier];
+
+// ================================
 // Event Listeners
 // ================================
 flipButton.addEventListener('click', flip);
