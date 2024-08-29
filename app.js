@@ -55,7 +55,9 @@ function createBoard(color, user) {
 }
 
 /**
- * Generates random placements for ship pieces for Computer player
+ * Generates random placements for ship pieces for Computer player.
+ * Generates a 50-50 on if the ship will be horizontal.
+ * The starting index is randomized as a block between 0 and 100.
  * 
  * Parameter:
  * ship - The ship Object
@@ -64,9 +66,31 @@ function createBoard(color, user) {
  */
 function addShipPiece(ship) {
     const allBoardBlocks = document.querySelectorAll("#computer div");
+    // 50-50 on true or false
     let randomBoolean = Math.random() < 0.5;
     let isHorizontal = randomBoolean;
+    // Generates random starting position
     let randomStartIndex = Math.floor(Math.random() * width * width);
+    
+    let validStart = 
+
+    let shipBlocks = [];
+
+    // Loops to place ship blocks
+    for (let i = 0; i < ship.length; i++) {
+        if (isHorizontal) {
+            // Selects the board pieces and 'converts' to make sure randomStartIndex is a number
+            shipBlocks.push(allBoardBlocks[Number(randomStartIndex) + i]);
+            
+        } else {
+            shipBlocks.push(allBoardBlocks[Number(randomStartIndex) + (i * width)]);
+        }
+    }
+    
+    shipBlocks.forEach(shipBlock => {
+        shipBlock.classList.add(ship.name);
+        shipBlock.classList.add('taken');
+    })
 }
 
 // ================================
@@ -87,6 +111,7 @@ const cruiser = new Ship('cruiser', 3);
 const battleship = new Ship('battleship', 4);
 const carrier = new Ship('carrier', 5);
 
+// Array of ship Objects
 const ships = [destroyer, submarine, cruiser, battleship, carrier];
 
 // ================================
@@ -96,7 +121,8 @@ const ships = [destroyer, submarine, cruiser, battleship, carrier];
 createBoard('yellow', 'player');
 createBoard('pink', 'computer');
 
-addShipPiece(destroyer);
+ships.forEach(ship => addShipPiece(ship))
+
 // ================================
 // Event Listeners
 // ================================
