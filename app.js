@@ -4,7 +4,6 @@
 const gamesBoardContainer = document.getElementById('gamesboard-container');
 const optionsContainer = document.querySelector('.options-container');
 const flipButton = document.getElementById('flip-button');
-const allPlayerBlocks = document.querySelectorAll('#player div');
 
 // ================================
 // Functions
@@ -78,19 +77,20 @@ function addShipPiece(user, ship, startId) {
     let isHorizontal = user === 'player' ? (angle === 0 || angle === 180): randomBoolean;
     // Generates random starting position
     let randomStartIndex = Math.floor(Math.random() * width * width);
+    let startIndex = startId ? startId : randomStartIndex;
 
     // CHECK IF RANDOM START IS TOO CLOSE TO EDGE
-    // Sets a valid start position if randomStartIndex is too big/long
+    // Sets a valid start position if startIndex is too big/long
     let validStart = 
         isHorizontal ? 
-            randomStartIndex <= width * width - ship.length ? 
-                randomStartIndex : 
+            startIndex <= width * width - ship.length ? 
+                startIndex : 
                 width * width - ship.length 
             : 
         // if Not Horizontal
-        randomStartIndex <= width * width - (ship.length*width) ?
-            randomStartIndex :
-            randomStartIndex - (ship.length * width) + width;
+        startIndex <= width * width - (ship.length*width) ?
+            startIndex :
+            startIndex - (ship.length * width) + width;
     
     // STORE PIECES INTO ARRAY
     let shipBlocks = [];
@@ -126,15 +126,18 @@ function addShipPiece(user, ship, startId) {
             shipBlock.classList.add('taken');
         })
     } else {
-        addShipPiece(user, ship, startId);
+        if (user === 'computer') addShipPiece(user, ship);
+        if (user === 'player') notDropped = true;
     }
 }
 
 // Player functions
 let draggedShip;
 const optionShips = Array.from(optionsContainer.children);
+let notDropped;
 
 function dragStart(e) {
+    notDropped = false;
     draggedShip = e.target;
 }
 function dragOver(e) {
@@ -144,7 +147,11 @@ function dragOver(e) {
 function dropShip(e) {
     const startId = e.target.id;
     const ship = ships[draggedShip.id];
-    addShipPiece('player', ship);
+    console.log(e.id);
+    addShipPiece('player', ship, startId);
+    if (!notDropped) {
+        draggedShip.remove();
+    }
 }
 // ================================
 // Constructors
@@ -183,7 +190,10 @@ flipButton.addEventListener('click', flip);
 
 // For dragging player ships
 optionShips.forEach(optionShip => optionShip.addEventListener('dragstart', dragStart));
+// DOM Query to grab playerblocks AFTER they're generated
+const allPlayerBlocks = document.querySelectorAll('#player div');
 allPlayerBlocks.forEach(playerBlock => {
     playerBlock.addEventListener('dragover', dragOver)
     playerBlock.addEventListener('drop', dropShip)
 });
+console.log(allPlayerBlocks)
