@@ -236,7 +236,7 @@ function handleClick(e) {
     if (!gameOver) {
         if (e.target.classList.contains('taken')) {
             e.target.classList.add('boom');
-            infoDisplay.textContent = "HIT"
+            infoDisplay.textContent = "YOU HIT THE COMPUTER"
             let classes = Array.from(e.target.classList);
             classes = classes.filter(className => className !== 'block');
             classes = classes.filter(className => className !== 'boom');
@@ -245,7 +245,7 @@ function handleClick(e) {
             console.log(playerHits);
         }
         if (!e.target.classList.contains('taken')) {
-            infoDisplay.textContent = "Miss!"
+            infoDisplay.textContent = "You missed!"
             e.target.classList.add('miss');
         }
         playerTurn = false;
@@ -255,6 +255,55 @@ function handleClick(e) {
         setTimeout(computerGo, 3000);
     }
 }
+
+/**
+ * Function to handle computer's turn
+ * 
+ * Invoked by handleClick
+ */
+function computerGo() {
+    if (!gameOver) {
+        turnDisplay.textContent = "Computer's turn";
+        infoDisplay.textContent = "Computer is thinking...";
+        setTimeout(() => {
+            let randomGo = Math.floor(Math.random() * width * width);
+            const allBoardBlocks = document.querySelectorAll('#player div');
+
+            // Computer goes again if space picked was already selected.
+            if (allBoardBlocks[randomGo].classList.contains('taken') &&
+                allBoardBlocks[randomGo].classList.contains('boom')
+            ) {
+                computerGo();
+                return;
+            } else if (
+                allBoardBlocks[randomGo].classList.contains('taken') &&
+                !allBoardBlocks[randomGo].classList.contains('boom')
+            ) {
+                allBoardBlocks[randomGo].classList.add('boom');
+                infoDisplay.textContent = "THE COMPUTER HIT YOU!";
+                let classes = Array.from(e.target.classList);
+                classes = classes.filter(className => className !== 'block');
+                classes = classes.filter(className => className !== 'boom');
+                classes = classes.filter(className => className !== 'taken');
+                computerHits.push(...classes);
+            } else {
+                infoDisplay.textContent = "MISS!";
+                allBoardBlocks[randomGo].classList.add('miss');
+            }
+            
+        }, 3000);
+
+        // Changes turn back to player turn
+        setTimeout(() => {
+            playerTurn = true;
+            turnDisplay.textContent = "Player's turn";
+            infoDisplay.textContent = "It's your turn!"
+            const allBoardBlocks = document.querySelectorAll('#computer div');
+            allBoardBlocks.forEach(block => block.addEventListener('click', handleClick));
+        }, 6000);
+    }
+}
+
 // ================================
 // Constructors
 // ================================
