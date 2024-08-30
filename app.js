@@ -286,7 +286,7 @@ function computerGo() {
                 !allBoardBlocks[randomGo].classList.contains('boom')
             ) {
                 allBoardBlocks[randomGo].classList.add('boom');
-                infoDisplay.textContent = "THE COMPUTER HIT YOU!";
+                infoDisplay.textContent = "THE COMPUTER HIT YOUR SHIP!";
                 let classes = Array.from(allBoardBlocks[randomGo].classList);
                 classes = classes.filter(className => className !== 'block');
                 classes = classes.filter(className => className !== 'boom');
@@ -323,12 +323,13 @@ function checkScore(user, userHits, userSunkShips) {
         if (
             userHits.filter(storedShipName => storedShipName === shipName).length === shipLength
         ) {
-            infoDisplay.textContent = `${user}'s ${shipName} has been sunk!`.toUpperCase();
             if (user === 'player') {
                 playerHits = userHits.filter(storedShipName => storedShipName !== shipName);
+                infoDisplay.textContent = `computer's ${shipName} has been sunk!`.toUpperCase();
             }
             if (user === 'computer') {
                 computerHits = userHits.filter(storedShipName => storedShipName !== shipName);
+                infoDisplay.textContent = `player's ${shipName} has been sunk!`.toUpperCase();
             }
             userSunkShips.push(shipName);
         }
@@ -340,9 +341,17 @@ function checkScore(user, userHits, userSunkShips) {
     checkShip('battleship', 4);
     checkShip('carrier', 5);
     
-    console.log('playerHits', playerHits);
-    console.log('playerSunkShips', playerSunkShips);
+    if(playerSunkShips.length === 5) {
+        infoDisplay.textContent = "you sunk all all the computer's battleships! You win!".toUpperCase();
+        gameOver = true;
+    }
+    
+    if(computerSunkShips.length === 5) {
+        infoDisplay.textContent = "the computer sunk all your battleships. you lose".toLowerCase();
+        gameOver = true;
+    }
 }
+
 // ================================
 // Constructors
 // ================================
