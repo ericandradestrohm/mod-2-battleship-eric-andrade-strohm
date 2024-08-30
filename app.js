@@ -71,19 +71,29 @@ function addShipPiece(ship) {
     let isHorizontal = randomBoolean;
     // Generates random starting position
     let randomStartIndex = Math.floor(Math.random() * width * width);
-    
+    console.log(randomStartIndex,ship.length, width * width - (ship.length*width));
+    // Sets a valid start position if randomStartIndex is too big/long
     let validStart = 
-
+        isHorizontal ? 
+            randomStartIndex <= width * width - ship.length ? 
+                randomStartIndex : 
+                width * width - ship.length 
+            : 
+        // if Not Horizontal
+        randomStartIndex <= width * width - (ship.length*width) ?
+            randomStartIndex :
+            randomStartIndex - (ship.length * width) + width;
+    console.log("adjusted",validStart);
     let shipBlocks = [];
 
     // Loops to place ship blocks
     for (let i = 0; i < ship.length; i++) {
         if (isHorizontal) {
             // Selects the board pieces and 'converts' to make sure randomStartIndex is a number
-            shipBlocks.push(allBoardBlocks[Number(randomStartIndex) + i]);
+            shipBlocks.push(allBoardBlocks[Number(validStart) + i]);
             
         } else {
-            shipBlocks.push(allBoardBlocks[Number(randomStartIndex) + (i * width)]);
+            shipBlocks.push(allBoardBlocks[Number(validStart) + (i * width)]);
         }
     }
     
