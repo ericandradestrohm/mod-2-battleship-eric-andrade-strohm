@@ -262,7 +262,7 @@ function handleClick(e) {
         const allBoardBlocks = document.querySelectorAll('#computer div');
         // Removes event listeners
         allBoardBlocks.forEach(block => block.replaceWith(block.cloneNode(true)));
-        setTimeout(computerGo, 3000);
+        setTimeout(computerTurn, 3000);
     }
 }
 
@@ -274,7 +274,7 @@ function handleClick(e) {
  * 
  * Invoked by handleClick
  */
-function computerGo() {
+function computerTurn() {
     if (!gameOver) {
         turnDisplay.textContent = "Computer's turn";
         infoDisplay.textContent = "Computer is thinking...";
@@ -286,7 +286,7 @@ function computerGo() {
             if (allBoardBlocks[randomGo].classList.contains('taken') &&
                 allBoardBlocks[randomGo].classList.contains('boom')
             ) {
-                computerGo();
+                computerTurn();
                 return;
             } else if (
                 allBoardBlocks[randomGo].classList.contains('taken') &&
@@ -305,7 +305,7 @@ function computerGo() {
                 allBoardBlocks[randomGo].classList.add('miss');
             }
 
-        }, 2500);
+        }, 2100);
 
         // Changes turn back to player turn
         setTimeout(() => {
@@ -321,7 +321,7 @@ function computerGo() {
 /**
  * Function for updating the score.
  * 
- * Invoked by handleClick and computerGo, after the player and computer take their turns.
+ * Invoked by handleClick and computerTurn, after the player and computer take their turns.
  */
 function checkScore(user, userHits, userSunkShips) {
     // Handles checking which ships got sunk/hit
