@@ -144,8 +144,8 @@ const ships = [destroyer, submarine, cruiser, battleship, carrier];
 // Function Calls
 // ================================
 // Create Board
-createBoard('yellow', 'player');
-createBoard('pink', 'computer');
+createBoard('#7fbcc7', 'player');
+createBoard('#98d0e0', 'computer');
 
 ships.forEach(ship => addShipPiece(ship))
 
