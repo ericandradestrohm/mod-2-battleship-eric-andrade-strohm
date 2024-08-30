@@ -228,12 +228,15 @@ function startGame() {
 
 let playerHits = [];
 let computerHits = [];
-// Handles attacks
+/**
+ * Function for handling clicks.
+ * Tracks what ship is hit, and marks it as such.
+ */
 function handleClick(e) {
     if (!gameOver) {
         if (e.target.classList.contains('taken')) {
             e.target.classList.add('boom');
-            infoDisplay.textContent = "You hit the computer's ship!"
+            infoDisplay.textContent = "HIT"
             let classes = Array.from(e.target.classList);
             classes = classes.filter(className => className !== 'block');
             classes = classes.filter(className => className !== 'boom');
@@ -241,6 +244,15 @@ function handleClick(e) {
             playerHits.push(...classes);
             console.log(playerHits);
         }
+        if (!e.target.classList.contains('taken')) {
+            infoDisplay.textContent = "Miss!"
+            e.target.classList.add('miss');
+        }
+        playerTurn = false;
+        const allBoardBlocks = document.querySelectorAll('#computer div');
+        // Removes event listeners
+        allBoardBlocks.forEach(block => block.replaceWith(block.cloneNode(true)));
+        setTimeout(computerGo, 3000);
     }
 }
 // ================================
