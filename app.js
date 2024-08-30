@@ -58,6 +58,9 @@ function createBoard(color, user) {
  * Generates random placements for ship pieces for Computer player.
  * Generates a 50-50 on if the ship will be horizontal.
  * The starting index is randomized as a block between 0 and 100.
+ * Starting index is adjusted so it doesn't go off the board vertically or horizontally.
+ * positions are stored in an array and then validated for positioning.
+ * Runs again if placement is invalid or overlaps.
  * 
  * Parameter:
  * ship - The ship Object
@@ -72,6 +75,7 @@ function addShipPiece(ship) {
     // Generates random starting position
     let randomStartIndex = Math.floor(Math.random() * width * width);
 
+    // CHECK IF RANDOM START IS TOO CLOSE TO EDGE
     // Sets a valid start position if randomStartIndex is too big/long
     let validStart = 
         isHorizontal ? 
@@ -84,6 +88,7 @@ function addShipPiece(ship) {
             randomStartIndex :
             randomStartIndex - (ship.length * width) + width;
     
+    // STORE PIECES INTO ARRAY
     let shipBlocks = [];
     // Loops to place ship blocks
     for (let i = 0; i < ship.length; i++) {
@@ -96,6 +101,7 @@ function addShipPiece(ship) {
         }
     }
     
+    // CHECK TO MAKE SURE PIECES DON'T OVERFLOW TO NEW ROW
     let valid = true;
     if (isHorizontal) {
         /*
@@ -106,9 +112,10 @@ function addShipPiece(ship) {
         */ 
         valid = shipBlocks.every((_shipBlock, index) => shipBlocks[0].id % width !== width - (shipBlocks.length - (index + 1)))
     }
-
+    // CHECK TO MAKE SURE PIECES DON'T OVERLAP WITH ANOTHER PIECE
     const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'));
 
+    // RUNS IF VALID, OTHERWISE LOOPS
     if(valid && notTaken){
         shipBlocks.forEach(shipBlock => {
             shipBlock.classList.add(ship.name);
