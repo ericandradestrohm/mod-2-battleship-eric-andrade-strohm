@@ -71,7 +71,7 @@ function addShipPiece(ship) {
     let isHorizontal = randomBoolean;
     // Generates random starting position
     let randomStartIndex = Math.floor(Math.random() * width * width);
-    console.log(randomStartIndex,ship.length, width * width - (ship.length*width));
+
     // Sets a valid start position if randomStartIndex is too big/long
     let validStart = 
         isHorizontal ? 
@@ -83,9 +83,8 @@ function addShipPiece(ship) {
         randomStartIndex <= width * width - (ship.length*width) ?
             randomStartIndex :
             randomStartIndex - (ship.length * width) + width;
-    console.log("adjusted",validStart);
+    
     let shipBlocks = [];
-
     // Loops to place ship blocks
     for (let i = 0; i < ship.length; i++) {
         if (isHorizontal) {
@@ -97,10 +96,27 @@ function addShipPiece(ship) {
         }
     }
     
-    shipBlocks.forEach(shipBlock => {
-        shipBlock.classList.add(ship.name);
-        shipBlock.classList.add('taken');
-    })
+    let valid = true;
+    if (isHorizontal) {
+        /*
+        if horizontal, check that each piece doesn't equal a spot that will overflow
+        shipBlocks[0].id % width = column that the piece is in
+        shipBlocks.length - (index + 1) will help iterate through each piece; index helps it count
+        width - (shipBlocks.length - (index + 1)) will go through each column that the starting position can't be
+        */ 
+        valid = shipBlocks.every((_shipBlock, index) => shipBlocks[0].id % width !== width - (shipBlocks.length - (index + 1)))
+    }
+
+    const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'));
+
+    if(valid && notTaken){
+        shipBlocks.forEach(shipBlock => {
+            shipBlock.classList.add(ship.name);
+            shipBlock.classList.add('taken');
+        })
+    } else {
+        addShipPiece(ship);
+    }
 }
 
 // ================================
