@@ -16,7 +16,7 @@ const turnDisplay = document.getElementById('turn-display');
  * Called by: `flipButton`
  */
 let angle = 0;
-function flip () {
+function flip() {
     const optionsShips = Array.from(optionsContainer.children);
     angle = angle === 270 ? 0 : angle + 90;
     //angle = angle === 0 ? 90 : 0;
@@ -46,7 +46,7 @@ function createBoard(color, user) {
     gameBoardContainer.style.backgroundColor = color;
     gameBoardContainer.id = user;
 
-    for (let i = 0; i < width * width; i++){
+    for (let i = 0; i < width * width; i++) {
         const block = document.createElement('div');
         block.classList.add('block');
         block.id = i;
@@ -77,19 +77,19 @@ function createBoard(color, user) {
  * notTaken - check for it pieces overlap
  */
 function getValidity(allBoardBlocks, isHorizontal, startIndex, ship) {
-// CHECK IF RANDOM START IS TOO CLOSE TO EDGE
+    // CHECK IF RANDOM START IS TOO CLOSE TO EDGE
     // Sets a valid start position if startIndex is too big/long
-    let validStart = 
-        isHorizontal ? 
-            startIndex <= width * width - ship.length ? 
-                startIndex : 
-                width * width - ship.length 
-            : 
-        // if Not Horizontal
-        startIndex <= width * width - (ship.length*width) ?
-            startIndex :
-            startIndex - (ship.length * width) + width;
-    
+    let validStart =
+        isHorizontal ?
+            startIndex <= width * width - ship.length ?
+                startIndex :
+                width * width - ship.length
+            :
+            // if Not Horizontal
+            startIndex <= width * width - (ship.length * width) ?
+                startIndex :
+                startIndex - (ship.length * width) + width;
+
     // STORE PIECES INTO ARRAY
     let shipBlocks = [];
     // Loops to place ship blocks
@@ -97,12 +97,12 @@ function getValidity(allBoardBlocks, isHorizontal, startIndex, ship) {
         if (isHorizontal) {
             // Selects the board pieces and 'converts' to make sure randomStartIndex is a number
             shipBlocks.push(allBoardBlocks[Number(validStart) + i]);
-            
+
         } else {
             shipBlocks.push(allBoardBlocks[Number(validStart) + (i * width)]);
         }
     }
-    
+
     // CHECK TO MAKE SURE PIECES DON'T OVERFLOW TO NEW ROW
     let noOverflow = true;
     if (isHorizontal) {
@@ -111,13 +111,13 @@ function getValidity(allBoardBlocks, isHorizontal, startIndex, ship) {
         shipBlocks[0].id % width = column that the piece is in
         shipBlocks.length - (index + 1) will help iterate through each piece; index helps it count
         width - (shipBlocks.length - (index + 1)) will go through each column that the starting position can't be
-        */ 
+        */
         noOverflow = shipBlocks.every((_shipBlock, index) => shipBlocks[0].id % width !== width - (shipBlocks.length - (index + 1)))
     }
     // CHECK TO MAKE SURE PIECES DON'T OVERLAP WITH ANOTHER PIECE
     const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'));
 
-    return {shipBlocks, noOverflow, notTaken};
+    return { shipBlocks, noOverflow, notTaken };
 }
 
 /**
@@ -140,14 +140,14 @@ function addShipPiece(user, ship, startId) {
     const allBoardBlocks = document.querySelectorAll(`#${user} div`);
     // 50-50 on true or false
     let randomBoolean = Math.random() < 0.5;
-    let isHorizontal = user === 'player' ? (angle === 0 || angle === 180): randomBoolean;
+    let isHorizontal = user === 'player' ? (angle === 0 || angle === 180) : randomBoolean;
     // Generates random starting position
     let randomStartIndex = Math.floor(Math.random() * width * width);
     let startIndex = startId ? startId : randomStartIndex;
 
-    const {shipBlocks, noOverflow, notTaken}= getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
+    const { shipBlocks, noOverflow, notTaken } = getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
     // RUNS IF VALID, OTHERWISE LOOPS
-    if(noOverflow && notTaken){
+    if (noOverflow && notTaken) {
         shipBlocks.forEach(shipBlock => {
             shipBlock.classList.add(ship.name);
             shipBlock.classList.add('taken');
@@ -167,8 +167,6 @@ function dragStart(e) {
     notDropped = false;
     draggedShip = e.target;
 
-    // Disable text selection during drag
-    document.body.style.userSelect = "none"; // Disable text selection during dragging
 }
 function dragOver(e) {
     e.preventDefault();
@@ -189,7 +187,6 @@ function dropShip(e) {
         draggedShip.remove();
     }
 
-    document.body.style.userSelect = "auto";
 }
 
 /**
@@ -202,7 +199,7 @@ function highlightArea(startIndex, ship, dragStatus) {
     const allBoardBlocks = document.querySelectorAll('#player div');
     let isHorizontal = (angle === 0 || angle === 180);
 
-    const {shipBlocks, noOverflow, notTaken} = getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
+    const { shipBlocks, noOverflow, notTaken } = getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
 
     if (noOverflow && notTaken && (dragStatus === 'over')) {
         shipBlocks.forEach(shipBlock => {
@@ -221,19 +218,29 @@ let gameOver = false;
 let playerTurn;
 // Starts the game when you click the start button
 function startGame() {
-    if(optionsContainer.children.length !== 0) {
+    if (optionsContainer.children.length !== 0) {
         infoDisplay.textContent = 'Please place all your pieces first!';
     } else {
         const allBoardBlocks = document.querySelectorAll('#computer div');
         allBoardBlocks.forEach(block => block.addEventListener('click', handleClick));
     }
 }
+
+let playerHits = [];
+let computerHits = [];
 // Handles attacks
 function handleClick(e) {
     if (!gameOver) {
         if (e.target.classList.contains('taken')) {
             e.target.classList.add('boom');
-            infoDisplay.textContent = "You hit the computer's ship!"        }
+            infoDisplay.textContent = "You hit the computer's ship!"
+            let classes = Array.from(e.target.classList);
+            classes = classes.filter(className => className !== 'block');
+            classes = classes.filter(className => className !== 'boom');
+            classes = classes.filter(className => className !== 'taken');
+            playerHits.push(...classes);
+            console.log(playerHits);
+        }
     }
 }
 // ================================
