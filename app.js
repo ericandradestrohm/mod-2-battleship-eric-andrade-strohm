@@ -218,11 +218,18 @@ let gameOver = false;
 let playerTurn;
 // Starts the game when you click the start button
 function startGame() {
-    if (optionsContainer.children.length !== 0) {
-        infoDisplay.textContent = 'Please place all your pieces first!';
-    } else {
-        const allBoardBlocks = document.querySelectorAll('#computer div');
-        allBoardBlocks.forEach(block => block.addEventListener('click', handleClick));
+    if (playerTurn === undefined) {
+        if (optionsContainer.children.length !== 0) {
+            infoDisplay.textContent = 'Please place all your pieces first!';
+        } else {
+            const allBoardBlocks = document.querySelectorAll('#computer div');
+            allBoardBlocks.forEach(block => block.addEventListener('click', handleClick));
+
+            playerTurn = true;
+            turnDisplay.textContent = "Player's turn";
+            infoDisplay.textContent = "The game has started! Your turn!"
+        }
+
     }
 }
 
@@ -297,7 +304,7 @@ function computerGo() {
                 infoDisplay.textContent = "MISS!";
                 allBoardBlocks[randomGo].classList.add('miss');
             }
-            
+
         }, 2500);
 
         // Changes turn back to player turn
@@ -317,7 +324,6 @@ function computerGo() {
  * Invoked by handleClick and computerGo, after the player and computer take their turns.
  */
 function checkScore(user, userHits, userSunkShips) {
-    
     // Handles checking which ships got sunk/hit
     function checkShip(shipName, shipLength) {
         if (
@@ -340,13 +346,13 @@ function checkScore(user, userHits, userSunkShips) {
     checkShip('cruiser', 3);
     checkShip('battleship', 4);
     checkShip('carrier', 5);
-    
-    if(playerSunkShips.length === 5) {
+
+    if (playerSunkShips.length === 5) {
         infoDisplay.textContent = "you sunk all all the computer's battleships! You win!".toUpperCase();
         gameOver = true;
     }
-    
-    if(computerSunkShips.length === 5) {
+
+    if (computerSunkShips.length === 5) {
         infoDisplay.textContent = "the computer sunk all your battleships. you lose".toLowerCase();
         gameOver = true;
     }
@@ -391,11 +397,12 @@ flipButton.addEventListener('click', flip);
 optionShips.forEach(optionShip => optionShip.addEventListener('dragstart', dragStart));
 // DOM Query to grab playerBlocks AFTER they're generated
 const allPlayerBlocks = document.querySelectorAll('#player div');
+// forEach loop to add event listeners for dragging the player pieces.
 allPlayerBlocks.forEach(playerBlock => {
     playerBlock.addEventListener('dragover', dragOver)
     playerBlock.addEventListener('dragleave', dragLeave)
     playerBlock.addEventListener('drop', dropShip)
 });
 
-
+// Event listener for the start button.
 startButton.addEventListener('click', startGame);
