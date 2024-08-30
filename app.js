@@ -67,7 +67,7 @@ function createBoard(color, user) {
  * startIndex - starting Index for the piece
  * ship - type of ship
  * 
- * Invoked by addShipPiece.
+ * Invoked by addShipPiece and highlightArea.
  * 
  * Returns:
  * shipBlocks - location for pieces
@@ -151,7 +151,7 @@ function addShipPiece(user, ship, startId) {
             shipBlock.classList.add('taken');
         })
     } else {
-        if (user === 'computer') addShipPiece(user, ship);
+        if (user === 'computer') addShipPiece(user, ship, startId);
         if (user === 'player') notDropped = true;
     }
 }
@@ -167,15 +167,45 @@ function dragStart(e) {
 }
 function dragOver(e) {
     e.preventDefault();
-
+    const ship = ships[draggedShip.id];
+    highlightArea(e.target.id, ship, "over");
+}
+function dragLeave(e) {
+    e.preventDefault();
+    const ship = ships[draggedShip.id];
+    highlightArea(e.target.id, ship, "leaving");
 }
 function dropShip(e) {
     const startId = e.target.id;
     const ship = ships[draggedShip.id];
-    console.log(e.id);
+    highlightArea(e.target.id, ship, "leaving");
     addShipPiece('player', ship, startId);
     if (!notDropped) {
         draggedShip.remove();
+    }
+}
+
+/**
+ * Highlights the area where the piece will be dropped.
+ * Also handles unhighlighting the area.
+ * 
+ * Used by dragOver, dropLeave, and dropShip.
+ */
+function highlightArea(startIndex, ship, dragStatus) {
+    const allBoardBlocks = document.querySelectorAll('#player div');
+    let isHorizontal = (angle === 0 || angle === 180);
+
+    const {shipBlocks, noOverflow, notTaken} = getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
+
+    if (noOverflow && notTaken && (dragStatus === 'over')) {
+        shipBlocks.forEach(shipBlock => {
+            shipBlock.classList.add('hover');
+            //shipBlock.classList.remove('hover');
+        })
+    } else {
+        shipBlocks.forEach(shipBlock => {
+            shipBlock.classList.remove('hover');
+        })
     }
 }
 // ================================
@@ -219,21 +249,6 @@ optionShips.forEach(optionShip => optionShip.addEventListener('dragstart', dragS
 const allPlayerBlocks = document.querySelectorAll('#player div');
 allPlayerBlocks.forEach(playerBlock => {
     playerBlock.addEventListener('dragover', dragOver)
+    playerBlock.addEventListener('dragleave', dragLeave)
     playerBlock.addEventListener('drop', dropShip)
 });
-
-function highlightArea(startIndex, ship) {
-    const allBoardBlocks = document.querySelectorAll('#player div');
-    let isHorizontal = (angle === 0 || angle === 180);
-
-    const {shipBlocks, noOverflow, notTaken} = getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
-
-    if (noOverflow && notTaken) {
-        shipBlocks.forEach(shipBlock => {
-            shipBlock.classList.add('hover');
-            setTimeout(() => {
-                shipBlock.classList.remove('hover');
-            }, 500);
-        })
-    }
-}
