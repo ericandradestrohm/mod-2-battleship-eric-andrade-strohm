@@ -228,13 +228,16 @@ function startGame() {
 
 let playerHits = [];
 let computerHits = [];
+const playerSunkShips = [];
+const computerSunkShips = [];
 /**
  * Function for handling clicks.
  * Tracks what ship is hit, and marks it as such.
+ * It only records the name of the ship that was hit.
  */
 function handleClick(e) {
     if (!gameOver) {
-        if (e.target.classList.contains('taken')) {
+        if (e.target.classList.contains('taken') && !e.target.classList.contains('boom')) {
             e.target.classList.add('boom');
             infoDisplay.textContent = "YOU HIT THE COMPUTER"
             let classes = Array.from(e.target.classList);
@@ -242,7 +245,7 @@ function handleClick(e) {
             classes = classes.filter(className => className !== 'boom');
             classes = classes.filter(className => className !== 'taken');
             playerHits.push(...classes);
-            console.log(playerHits);
+            checkScore('player', playerHits, playerSunkShips);
         }
         if (!e.target.classList.contains('taken')) {
             infoDisplay.textContent = "You missed!"
@@ -257,7 +260,10 @@ function handleClick(e) {
 }
 
 /**
- * Function to handle computer's turn
+ * Function to handle computer's turn.
+ * turnDisplay and infoDisplay are updated accordingly.
+ * Computer 'selects' a random spot on the board. If statement handles logic.
+ * After that it passes control back to player. 
  * 
  * Invoked by handleClick
  */
@@ -281,17 +287,18 @@ function computerGo() {
             ) {
                 allBoardBlocks[randomGo].classList.add('boom');
                 infoDisplay.textContent = "THE COMPUTER HIT YOU!";
-                let classes = Array.from(e.target.classList);
+                let classes = Array.from(allBoardBlocks[randomGo].classList);
                 classes = classes.filter(className => className !== 'block');
                 classes = classes.filter(className => className !== 'boom');
                 classes = classes.filter(className => className !== 'taken');
                 computerHits.push(...classes);
+                checkScore('computer', computerHits, computerSunkShips);
             } else {
                 infoDisplay.textContent = "MISS!";
                 allBoardBlocks[randomGo].classList.add('miss');
             }
             
-        }, 3000);
+        }, 2500);
 
         // Changes turn back to player turn
         setTimeout(() => {
@@ -300,10 +307,42 @@ function computerGo() {
             infoDisplay.textContent = "It's your turn!"
             const allBoardBlocks = document.querySelectorAll('#computer div');
             allBoardBlocks.forEach(block => block.addEventListener('click', handleClick));
-        }, 6000);
+        }, 3500);
     }
 }
 
+/**
+ * Function for updating the score.
+ * 
+ * Invoked by handleClick and computerGo, after the player and computer take their turns.
+ */
+function checkScore(user, userHits, userSunkShips) {
+    
+    // Handles checking which ships got sunk/hit
+    function checkShip(shipName, shipLength) {
+        if (
+            userHits.filter(storedShipName => storedShipName === shipName).length === shipLength
+        ) {
+            infoDisplay.textContent = `${user}'s ${shipName} has been sunk!`.toUpperCase();
+            if (user === 'player') {
+                playerHits = userHits.filter(storedShipName => storedShipName !== shipName);
+            }
+            if (user === 'computer') {
+                computerHits = userHits.filter(storedShipName => storedShipName !== shipName);
+            }
+            userSunkShips.push(shipName);
+        }
+    }
+
+    checkShip('destroyer', 2);
+    checkShip('submarine', 3);
+    checkShip('cruiser', 3);
+    checkShip('battleship', 4);
+    checkShip('carrier', 5);
+    
+    console.log('playerHits', playerHits);
+    console.log('playerSunkShips', playerSunkShips);
+}
 // ================================
 // Constructors
 // ================================
