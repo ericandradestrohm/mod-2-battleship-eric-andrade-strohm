@@ -55,31 +55,27 @@ function createBoard(color, user) {
 }
 
 /**
- * Places the pieces for the player,
- * For the computer, generates random piece placements
- * Generates a 50-50 on if the ship will be horizontal.
- * The starting index is randomized as a block between 0 and 100.
- * Starting index is adjusted so it doesn't go off the board vertically or horizontally.
- * positions are stored in an array and then validated for positioning.
- * Runs again if placement is invalid or overlaps.
+ * Handles checking if placement/generation for pieces is valid.
+ * Specifically checks:
+ * Is starting index valid
+ * Will the ship overflow to a new row
+ * Is the piece overlapping with another
  * 
- * Parameter:
- * user - player or CPU
- * ship - The ship Object
- * startId - ID of the piece
+ * Parameters:
+ * allBoardBlocks - DOM query for all the board blocks
+ * isHorizontal - Is the piece horizontal or vertical
+ * startIndex - starting Index for the piece
+ * ship - type of ship
  * 
- * Invoked when creating ship placements.
+ * Invoked by addShipPiece.
+ * 
+ * Returns:
+ * shipBlocks - location for pieces
+ * noOverflow - check for if pieces overflow
+ * notTaken - check for it pieces overlap
  */
-function addShipPiece(user, ship, startId) {
-    const allBoardBlocks = document.querySelectorAll(`#${user} div`);
-    // 50-50 on true or false
-    let randomBoolean = Math.random() < 0.5;
-    let isHorizontal = user === 'player' ? (angle === 0 || angle === 180): randomBoolean;
-    // Generates random starting position
-    let randomStartIndex = Math.floor(Math.random() * width * width);
-    let startIndex = startId ? startId : randomStartIndex;
-
-    // CHECK IF RANDOM START IS TOO CLOSE TO EDGE
+function getValidity(allBoardBlocks, isHorizontal, startIndex, ship) {
+// CHECK IF RANDOM START IS TOO CLOSE TO EDGE
     // Sets a valid start position if startIndex is too big/long
     let validStart = 
         isHorizontal ? 
@@ -119,6 +115,35 @@ function addShipPiece(user, ship, startId) {
     // CHECK TO MAKE SURE PIECES DON'T OVERLAP WITH ANOTHER PIECE
     const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'));
 
+    return {shipBlocks, noOverflow, notTaken};
+}
+
+/**
+ * Places the pieces for the player,
+ * For the computer, generates random piece placements
+ * Generates a 50-50 on if the ship will be horizontal.
+ * The starting index is randomized as a block between 0 and 100.
+ * Starting index is adjusted so it doesn't go off the board vertically or horizontally.
+ * positions are stored in an array and then validated for positioning (handled by getValidity()).
+ * Runs again if placement is invalid or overlaps.
+ * 
+ * Parameter:
+ * user - player or CPU
+ * ship - The ship Object
+ * startId - ID of the piece
+ * 
+ * Invoked when creating ship placements.
+ */
+function addShipPiece(user, ship, startId) {
+    const allBoardBlocks = document.querySelectorAll(`#${user} div`);
+    // 50-50 on true or false
+    let randomBoolean = Math.random() < 0.5;
+    let isHorizontal = user === 'player' ? (angle === 0 || angle === 180): randomBoolean;
+    // Generates random starting position
+    let randomStartIndex = Math.floor(Math.random() * width * width);
+    let startIndex = startId ? startId : randomStartIndex;
+
+    const {shipBlocks, noOverflow, notTaken}= getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
     // RUNS IF VALID, OTHERWISE LOOPS
     if(noOverflow && notTaken){
         shipBlocks.forEach(shipBlock => {
@@ -190,10 +215,25 @@ flipButton.addEventListener('click', flip);
 
 // For dragging player ships
 optionShips.forEach(optionShip => optionShip.addEventListener('dragstart', dragStart));
-// DOM Query to grab playerblocks AFTER they're generated
+// DOM Query to grab playerBlocks AFTER they're generated
 const allPlayerBlocks = document.querySelectorAll('#player div');
 allPlayerBlocks.forEach(playerBlock => {
     playerBlock.addEventListener('dragover', dragOver)
     playerBlock.addEventListener('drop', dropShip)
 });
-console.log(allPlayerBlocks)
+
+function highlightArea(startIndex, ship) {
+    const allBoardBlocks = document.querySelectorAll('#player div');
+    let isHorizontal = (angle === 0 || angle === 180);
+
+    const {shipBlocks, noOverflow, notTaken} = getValidity(allBoardBlocks, isHorizontal, startIndex, ship);
+
+    if (noOverflow && notTaken) {
+        shipBlocks.forEach(shipBlock => {
+            shipBlock.classList.add('hover');
+            setTimeout(() => {
+                shipBlock.classList.remove('hover');
+            }, 500);
+        })
+    }
+}
