@@ -164,6 +164,9 @@ let notDropped;
 function dragStart(e) {
     notDropped = false;
     draggedShip = e.target;
+
+    // Prevent dragging the 'whole picture'
+    document.body.style.userSelect = 'none';
 }
 function dragOver(e) {
     e.preventDefault();
