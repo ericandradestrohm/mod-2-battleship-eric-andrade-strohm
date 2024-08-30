@@ -4,7 +4,9 @@
 const gamesBoardContainer = document.getElementById('gamesboard-container');
 const optionsContainer = document.querySelector('.options-container');
 const flipButton = document.getElementById('flip-button');
-
+const startButton = document.getElementById('start-button')
+const infoDisplay = document.getElementById('info-display');
+const turnDisplay = document.getElementById('turn-display');
 // ================================
 // Functions
 // ================================
@@ -165,8 +167,8 @@ function dragStart(e) {
     notDropped = false;
     draggedShip = e.target;
 
-    // Prevent dragging the 'whole picture'
-    document.body.style.userSelect = 'none';
+    // Disable text selection during drag
+    document.body.style.userSelect = "none"; // Disable text selection during dragging
 }
 function dragOver(e) {
     e.preventDefault();
@@ -186,6 +188,8 @@ function dropShip(e) {
     if (!notDropped) {
         draggedShip.remove();
     }
+
+    document.body.style.userSelect = "auto";
 }
 
 /**
@@ -209,6 +213,27 @@ function highlightArea(startIndex, ship, dragStatus) {
         shipBlocks.forEach(shipBlock => {
             shipBlock.classList.remove('hover');
         })
+    }
+}
+
+// GAME PLAY STARTING AND HANDLING
+let gameOver = false;
+let playerTurn;
+// Starts the game when you click the start button
+function startGame() {
+    if(optionsContainer.children.length !== 0) {
+        infoDisplay.textContent = 'Please place all your pieces first!';
+    } else {
+        const allBoardBlocks = document.querySelectorAll('#computer div');
+        allBoardBlocks.forEach(block => block.addEventListener('click', handleClick));
+    }
+}
+// Handles attacks
+function handleClick(e) {
+    if (!gameOver) {
+        if (e.target.classList.contains('taken')) {
+            e.target.classList.add('boom');
+            infoDisplay.textContent = "You hit the computer's ship!"        }
     }
 }
 // ================================
@@ -255,3 +280,6 @@ allPlayerBlocks.forEach(playerBlock => {
     playerBlock.addEventListener('dragleave', dragLeave)
     playerBlock.addEventListener('drop', dropShip)
 });
+
+
+startButton.addEventListener('click', startGame);
