@@ -182,14 +182,16 @@ function dragLeave(e) {
     }
 }
 function dropShip(e) {
-    const startId = e.target.id;
-    const ship = ships[draggedShip.id];
-    highlightArea(e.target.id, ship, "leaving");
-    addShipPiece('player', ship, startId);
-    if (!notDropped) {
-        draggedShip.remove();
-        // Null fixes duplicate dragging issue
-        draggedShip = null;
+    if(draggedShip){
+        const startId = e.target.id;
+        const ship = ships[draggedShip.id];
+        highlightArea(e.target.id, ship, "leaving");
+        addShipPiece('player', ship, startId);
+        if (!notDropped) {
+            draggedShip.remove();
+            // Null fixes duplicate dragging issue
+            draggedShip = null;
+        }
     }
 }
 
