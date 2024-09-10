@@ -166,17 +166,20 @@ let notDropped;
 function dragStart(e) {
     notDropped = false;
     draggedShip = e.target;
-
 }
 function dragOver(e) {
     e.preventDefault();
-    const ship = ships[draggedShip.id];
-    highlightArea(e.target.id, ship, "over");
+    if(draggedShip){
+        const ship = ships[draggedShip.id];
+        highlightArea(e.target.id, ship, "over");
+    }
 }
 function dragLeave(e) {
     e.preventDefault();
-    const ship = ships[draggedShip.id];
-    highlightArea(e.target.id, ship, "leaving");
+    if(draggedShip){
+        const ship = ships[draggedShip.id];
+        highlightArea(e.target.id, ship, "leaving");
+    }
 }
 function dropShip(e) {
     const startId = e.target.id;
@@ -185,8 +188,9 @@ function dropShip(e) {
     addShipPiece('player', ship, startId);
     if (!notDropped) {
         draggedShip.remove();
+        // Null fixes duplicate dragging issue
+        draggedShip = null;
     }
-
 }
 
 /**
